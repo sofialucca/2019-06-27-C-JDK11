@@ -16,7 +16,7 @@ public class Model {
 	private Graph<String,DefaultWeightedEdge> grafo;
 	private EventsDao dao;
 	private List<Adiacenti> archiInferiori;
-	private List<Adiacenti> percorsoOttimo;
+	private List<String> percorsoOttimo;
 	private double pesoOttimo;
 	
 	public Model() {
@@ -55,8 +55,39 @@ public class Model {
 		return archiInferiori;
 	}
 	
-	public List<Adiacenti> calcolaPercorso(){
+	public List<String> calcolaPercorso(Adiacenti a){
+		percorsoOttimo = new ArrayList<>();
+		pesoOttimo = 0;
+		List<String> parziale = new ArrayList<>();
+		parziale.add(a.getR1());
+		cerca(parziale, a.getR2(), 0);
+		
 		return this.percorsoOttimo;
+	}
+
+	private void cerca(List<String> parziale, String arrivo, double pesoParziale) {
+		String ultimo = parziale.get(parziale.size() -1);
+		if(ultimo.equals(arrivo)) {
+			if(pesoParziale > pesoOttimo) {
+				pesoOttimo = pesoParziale;
+				percorsoOttimo = new ArrayList<>(parziale);
+			}
+			return;
+		}else {
+			for(String s : Graphs.neighborListOf(grafo, ultimo)) {
+				if(!parziale.contains(s)) {
+					parziale.add(s);
+					DefaultWeightedEdge e = grafo.getEdge(ultimo, s);
+					double costo = grafo.getEdgeWeight(e);
+					cerca(parziale, arrivo, pesoParziale + costo);
+					parziale.remove(s);
+				}
+			}
+		}
+	}
+	
+	public double getPesoOttimo() {
+		return this.pesoOttimo;
 	}
 	
 }

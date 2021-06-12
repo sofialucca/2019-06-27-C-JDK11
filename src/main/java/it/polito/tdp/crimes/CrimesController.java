@@ -48,6 +48,7 @@ public class CrimesController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
+    	this.boxArco.setValue(null);
     	if(!isValid()) {
     		return;
     	}
@@ -90,7 +91,18 @@ public class CrimesController {
 	@FXML
     void doCalcolaPercorso(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Calcola percorso...\n");
+    	Adiacenti a = this.boxArco.getValue();
+    	if(a == null) {
+    		txtResult.appendText("ERRORE : selezionare un arco");
+    		return;
+    	}
+    	
+    	List<String> result = model.calcolaPercorso(a);
+    	txtResult.appendText("PERCORSO TRA " + a.getR1() + " E " + a.getR2());
+    	txtResult.appendText("\n\nCOSTO MASSIMO= " + model.getPesoOttimo() + "\n");
+    	for(String s : result) {
+    		txtResult.appendText("\n" + s);
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
